@@ -1,28 +1,78 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
-        <meta charset="">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>澳门威尼斯</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>给我最喜欢的宝宝</title>
+    <style>
+        body {
+            font-family: '微软雅黑', sans-serif;
+            background: linear-gradient(135deg, #FF9A8B, #FFB6C1);
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: white;
+            overflow: hidden;
+        }
+        .container {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            animation: fadeIn 2s ease-out;
+        }
+        p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            animation: fadeIn 3s ease-out;
+        }
+        .heart {
+            font-size: 50px;
+            color: #FF69B4;
+            animation: heartbeat 1.5s infinite;
+        }
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes heartbeat {
+            0% {
+                transform: scale(1);
+            }
+            25% {
+                transform: scale(1.2);
+            }
+            50% {
+                transform: scale(1);
+            }
+            75% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+    </style>
 </head>
 <body>
-        <img src="https://so1.360tres.com/t01f07f58aac2e22b3a.png" width="200" height="150"/><strong style="color: red;">欢迎!</strong><img src="https://so1.360tres.com/t01f07f58aac2e22b3a.png" width="200" height="150"/>
-        <dl>
-                <dt>迅雷网盘</dt> 
-                <dd><a href="https://www.bilibili.com/" target="_blank">欧美区</a></dd>
-                <dd><a href="https://space.bilibili.com/456524012?spm_id_from=333.337.0.0" target="_blank">jk萝莉</a></dd>
-                <dd><a href="#" target="_blank">黑白专区</a></dd>
-                <dd><a href="#" target="_blank">磁力链接100TB</a></dd>
-        </dl>
-       <img src="https://so1.360tres.com/t01f07f58aac2e22b3a.png"/>
-        <dl>    
-                <dt>&nbsp;</dt>
-                <dd><a href="#" target="_blank">日韩区</a></dd>
-                <dd><a href="#" target="_blank">国产区</a></dd>
-                <dd><a href="#" target="_blank">91入口</a></dd>
-                <dd><a href="https://pixabay.com/zh/photos/white-tigers-tigers-feline-animal-6371630/" target="_blank">野外 白虎 露出 写真</a></dd>
-        </dl>
-
-
+    <div class="container">
+        <h1>亲爱的，赵孟琳宝宝！</h1>
+        <p>有你在的日子，是我的幸运。</p>        <p>愿我的心永远为你跳动❤️</p>
+        <div class="heart">💖</div>
+    </div>
 </body>
 </html>
