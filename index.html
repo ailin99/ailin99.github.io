@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>给我最喜欢的宝宝</title>
+    <title>给我最喜欢的宝宝，我的心永远为你跳动</title>
+    <meta name="description" content="给我最喜欢的宝宝，愿我的心永远为你跳动。赵孟琳，爱你如生命。">
     <style>
         body {
             font-family: '微软雅黑', sans-serif;
@@ -23,7 +24,20 @@
             padding: 40px;
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            max-width: 90%;
+            max-height: 80%;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease-in-out;
         }
+
+        .container:hover {
+            transform: scale(1.05);
+        }
+
         h1 {
             font-size: 3rem;
             margin-bottom: 20px;
@@ -38,7 +52,10 @@
             font-size: 50px;
             color: #FF69B4;
             animation: heartbeat 1.5s infinite;
+            margin-top: 20px;
+            cursor: pointer;
         }
+
         @keyframes fadeIn {
             0% {
                 opacity: 0;
@@ -49,6 +66,7 @@
                 transform: translateY(0);
             }
         }
+
         @keyframes heartbeat {
             0% {
                 transform: scale(1);
@@ -66,13 +84,73 @@
                 transform: scale(1);
             }
         }
+
+        /* 针对小屏设备的优化 */
+        @media screen and (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            p {
+                font-size: 1rem;
+            }
+            .heart {
+                font-size: 40px;
+            }
+        }
+
+        /* 音乐控制按钮样式 */
+        .music-control {
+            background-color: #FF69B4;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 30px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        .music-control:hover {
+            background-color: #FF4F7D;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>亲爱的，赵孟琳宝宝！</h1>
-        <p>有你在的日子，是我的幸运。</p>        <p>愿我的心永远为你跳动❤️</p>
-        <div class="heart">💖</div>
+        <p>有你在的日子，是我的幸运。</p>
+        <p>愿我的心永远为你跳动❤️</p>
+        <div class="heart" aria-label="跳动的心形">💖</div>
+
+        <!-- 音乐播放/暂停按钮 -->
+        <button class="music-control" id="musicButton">播放音乐</button>
+
+        <!-- 背景音乐 -->
+        <audio id="backgroundMusic" loop>
+            <source src="https://webfs.kugou.com/202411062053/fefbe809ce95d27bc0cb6b5d23094028/v3/97870f3d4b01a7822dc497c6127ea66d/yp/p_0_1936052/ap1014_us0_mi0c0bde115b568d351df5c2f81f6705d2_pi406_mx32111445_s3261631508.mp3">
+            您的浏览器不支持音频元素。
+        </audio>
     </div>
+
+    <!-- JavaScript 控制 -->
+    <script>
+        const musicButton = document.getElementById('musicButton');
+        const backgroundMusic = document.getElementById('backgroundMusic');
+
+        // 控制播放/暂停
+        musicButton.addEventListener('click', function() {
+            if (backgroundMusic.paused) {
+                backgroundMusic.play();
+                musicButton.textContent = '暂停音乐'; // 改变按钮文本
+            } else {
+                backgroundMusic.pause();
+                musicButton.textContent = '播放音乐'; // 改变按钮文本
+            }
+        });
+
+        // 监听音乐结束后，按钮文本恢复
+        backgroundMusic.addEventListener('ended', function() {
+            musicButton.textContent = '播放音乐';
+        });
+    </script>
 </body>
 </html>
