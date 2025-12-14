@@ -1,27 +1,691 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
+    <title>!Hello!</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        h1{
-            color: pink;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-    </style>
-<body>
-    <script>
-        while (true) {
-            let str = prompt('你爱我吗?')
-            if (str === '我爱你罗宣')
-                break
-            else{
-                alert('答案不对哦!!!')
+
+        body {
+            font-family: system-ui, sans-serif;
+            background: linear-gradient(135deg, #ffafcc 0%, #c46086 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: white;
+        }
+
+        @keyframes gradientBG {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
             }
         }
-        document.write('<h1>我也爱你宝宝!嘻嘻<\h1>')
+
+        /* 漂浮元素的基础样式 */
+        .floating-item {
+            position: fixed;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.3;
+        }
+
+        .main-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .name {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #ffb6c1;
+        }
+
+        .time-location {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin: 10px 0;
+            display: inline-block;
+            font-size: 0.9rem;
+        }
+
+        .status-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .status-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 2rem;
+        }
+
+        .status-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .status-alive {
+            color: #4cff88;
+        }
+
+        .status-dead {
+            color: #ff6b6b;
+        }
+
+        .info-grid {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .info-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .info-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 1.2rem;
+        }
+
+        .info-content {
+            flex: 1;
+        }
+
+        .info-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .timestamp {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .last-seen {
+            color: #ffcc00;
+        }
+
+        .refresh-info {
+            margin-top: 10px;
+            text-align: center;
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        .history-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-size: 0.9rem;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-container {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 15px;
+            padding: 20px;
+            width: 90%;
+            max-width: 400px;
+            max-height: 60vh;
+            overflow-y: auto;
+            color: white;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .modal-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .close-button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .history-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-left: 3px solid #4cff88;
+        }
+
+        .history-time {
+            font-size: 0.8rem;
+            color: #ffcc00;
+            margin-bottom: 5px;
+        }
+
+        .history-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5px;
+            font-size: 0.85rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main-content">
+        <div class="header">
+            <h1 class="name">想你啦!琳琳宝贝</h1>
+            <div class="time-location">
+                🕒 现在是 <span id="currentTime">--:--</span>
+            </div>
+        </div>
+
+        <div class="status-container">
+            <div class="status-icon" id="statusIcon">
+                ⏳
+            </div>
+            <div class="status-text" id="statusText">
+                加载设备状态...
+            </div>
+        </div>
+
+        <div class="info-grid">
+            <div class="info-item">
+                <div class="info-icon">📱</div>
+                <div class="info-content">
+                    <div class="info-label">当前应用</div>
+                    <div class="info-value" id="appValue">加载中...</div>
+                </div>
+            </div>
+            <div class="info-item">
+                <div class="info-icon">🔋</div>
+                <div class="info-content">
+                    <div class="info-label">手机电量</div>
+                    <div class="info-value" id="batteryValue">加载中...</div>
+                </div>
+            </div>
+            <div class="info-item">
+                <div class="info-icon">📍</div>
+                <div class="info-content">
+                    <div class="info-label">所在区域</div>
+                    <div class="info-value" id="districtValue">加载中...</div>
+                </div>
+            </div>
+            <div class="info-item">
+                <div class="info-icon">📶</div>
+                <div class="info-content">
+                    <div class="info-label">网络类型</div>
+                    <div class="info-value" id="networkValue">加载中...</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="timestamp">
+            <span id="timestampText">
+                最后更新: <span id="updateTimeValue">加载中...</span>
+            </span>
+        </div>
+
+        <div class="refresh-info">
+            设备ID: <span id="deviceIdDisplay">加载中...</span> |
+            下次更新: <span id="countdown">30</span>秒
+        </div>
+
+        <button class="history-btn" id="historyBtn">📊 查看历史记录</button>
+    </div>
+
+    <!-- 历史记录弹窗 -->
+    <div class="modal" id="historyModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <div class="modal-title">📊 设备状态历史</div>
+                <button class="close-button" id="closeHistoryModal">×</button>
+            </div>
+            <div class="history-list" id="historyList">
+                <div class="loading">加载历史记录...</div>
+            </div>
+        </div>
+    </div>
+
+    <audio id="bgMusic" autoplay loop style="display:none">
+        <source src="https://music.163.com/song/media/outer/url?id=1330348068.mp3" type="audio/mpeg">
+        你的浏览器不支持音频播放
+    </audio>
+    <!-- 音乐控制按钮，可以放在右上角 -->
+    <div style="position:fixed; top:20px; right:20px; z-index:1000;">
+        <button id="musicToggle" style="
+        background: rgba(255, 255, 255, 0.3);
+        border: none;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        color: #ff4081;
+        font-size: 20px;
+        cursor: pointer;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 15px rgba(255, 64, 129, 0.3);
+    ">🎵</button>
+    </div>
+
+    <script>
+        // ==================== 创建动态背景 ====================
+        function createFloatingBackground() {
+            const types = ['heart', 'circle', 'star'];
+            const colors = ['rgba(255, 255, 255, 0.2)', 'rgba(255, 182, 193, 0.2)', 'rgba(255, 105, 180, 0.2)'];
+
+            // 创建20个漂浮元素
+            for (let i = 0; i < 20; i++) {
+                const item = document.createElement('div');
+                item.className = 'floating-item';
+
+                // 随机属性
+                const size = Math.random() * 40 + 10; // 10-50px
+                const type = types[Math.floor(Math.random() * types.length)];
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                const duration = Math.random() * 20 + 10; // 10-30秒
+
+                // 设置样式
+                item.style.width = size + 'px';
+                item.style.height = size + 'px';
+                item.style.background = color;
+                item.style.left = Math.random() * 100 + 'vw';
+                item.style.top = Math.random() * 100 + 'vh';
+                item.style.opacity = Math.random() * 0.3 + 0.1;
+
+                // 特殊形状：爱心
+                if (type === 'heart') {
+                    item.style.background = 'transparent';
+                    item.style.fontSize = size + 'px';
+                    item.style.width = 'auto';
+                    item.style.height = 'auto';
+                    item.innerHTML = '❤️';
+                    item.style.opacity = Math.random() * 0.2 + 0.1;
+                }
+
+                // 动画
+                item.style.animation = `float ${duration}s infinite ease-in-out`;
+
+                // 添加到页面
+                document.body.appendChild(item);
+
+                // 漂浮动画关键帧
+                if (!document.getElementById('floatAnimation')) {
+                    const style = document.createElement('style');
+                    style.id = 'floatAnimation';
+                    style.textContent = `
+                @keyframes float {
+                    0%, 100% { 
+                        transform: translateY(0) translateX(0) rotate(0deg); 
+                    }
+                    25% { 
+                        transform: translateY(-20px) translateX(10px) rotate(90deg); 
+                    }
+                    50% { 
+                        transform: translateY(10px) translateX(-10px) rotate(180deg); 
+                    }
+                    75% { 
+                        transform: translateY(-10px) translateX(5px) rotate(270deg); 
+                    }
+                }
+            `;
+                    document.head.appendChild(style);
+                }
+            }
+        }
+
+        // 初始化时调用
+        createFloatingBackground();
+        // ==================== 配置 ====================
+        const SUPABASE_URL = 'https://lieyuwsilzvyvrqzxjew.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_pRkBr7GG3WBUh3hya4wI6Q_GFKWT_MJ';
+        const DEVICE_ID = 'V2148A';  // 根据你的数据库修改这里！
+
+        // 初始化
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        let countdown = 30;
+        let countdownTimer;
+
+        // ==================== 核心函数 ====================
+
+        async function loadDeviceStatus() {
+            try {
+                // 获取最新数据
+                const { data, error } = await supabase
+                    .from('device_reports')
+                    .select('*')
+                    .eq('device_id', DEVICE_ID)
+                    .order('created_at', { ascending: false })
+                    .limit(1)
+                    .single();
+
+                if (error) {
+                    // 没有数据的情况
+                    if (error.code === 'PGRST116') {
+                        updateDisplay(null, false, '设备暂无数据');
+                    } else {
+                        console.error('查询错误:', error);
+                        updateDisplay(null, false, '查询失败');
+                    }
+                    return;
+                }
+
+                // 计算是否在线（5分钟内算在线）
+                const lastUpdate = new Date(data.created_at);
+                const now = new Date();
+                const minutesDiff = Math.floor((now - lastUpdate) / (1000 * 60));
+                const isOnline = minutesDiff < 30;
+
+                updateDisplay(data, isOnline, isOnline ? '在线' : '离线');
+
+            } catch (error) {
+                console.error('加载失败:', error);
+                updateDisplay(null, false, '加载失败');
+            }
+        }
+
+        function updateDisplay(data, isOnline, statusText) {
+            // 更新状态
+            const statusIcon = document.getElementById('statusIcon');
+            const statusTextEl = document.getElementById('statusText');
+
+            if (isOnline) {
+                statusIcon.innerHTML = '✅';
+                statusTextEl.innerHTML = '🟢 设备在线';
+                statusTextEl.className = 'status-text status-alive';
+            } else {
+                statusIcon.innerHTML = '❌';
+                statusTextEl.innerHTML = '⚫ 设备离线';
+                statusTextEl.className = 'status-text status-dead';
+            }
+
+            // 更新详细信息
+            if (data) {
+                document.getElementById('appValue').textContent = data.current_app || '未知';
+                document.getElementById('batteryValue').textContent =
+                    data.battery_level !== null ? `${data.battery_level}%` : '未知';
+                // 处理区域显示
+                let districtValue = data.district || '未知';
+                if (districtValue === '获取失败' || districtValue.includes('获取失败')) {
+                    districtValue = '广东省东莞市';
+                }
+                document.getElementById('districtValue').textContent = districtValue;
+                document.getElementById('networkValue').textContent = data.network_type || '未知';
+
+                const updateTime = new Date(data.created_at);
+                const timeStr = updateTime.toLocaleString('zh-CN');
+                document.getElementById('updateTimeValue').textContent = timeStr;
+
+                const minutesAgo = Math.floor((new Date() - updateTime) / (1000 * 60));
+                if (!isOnline) {
+                    document.getElementById('timestampText').innerHTML =
+                        `<span class="last-seen">最后在线: ${timeStr} (${minutesAgo}分钟前)</span>`;
+                }
+            } else {
+                document.getElementById('appValue').textContent = '无数据';
+                document.getElementById('batteryValue').textContent = '无数据';
+                document.getElementById('districtValue').textContent = '无数据';
+                document.getElementById('networkValue').textContent = '无数据';
+                document.getElementById('updateTimeValue').textContent = '无数据';
+            }
+
+            // 显示设备ID
+            document.getElementById('deviceIdDisplay').textContent = DEVICE_ID;
+        }
+
+        async function loadHistory() {
+            const historyList = document.getElementById('historyList');
+            historyList.innerHTML = '<div class="loading">加载中...</div>';
+
+            try {
+                const { data, error } = await supabase
+                    .from('device_reports')
+                    .select('*')
+                    .eq('device_id', DEVICE_ID)
+                    .order('created_at', { ascending: false })
+                    .limit(10);
+
+                if (error) {
+                    historyList.innerHTML = '<div class="loading">加载失败</div>';
+                    return;
+                }
+
+                if (!data || data.length === 0) {
+                    historyList.innerHTML = '<div class="loading">暂无历史记录</div>';
+                    return;
+                }
+
+                let html = '';
+                data.forEach(record => {
+                    const time = new Date(record.created_at);
+                    const timeStr = time.toLocaleString('zh-CN');
+                    const timeAgo = Math.floor((new Date() - time) / (1000 * 60));
+
+                    html += `
+                        <div class="history-item">
+                            <div class="history-time">
+                                ${timeStr} (${timeAgo}分钟前)
+                                ${record.is_manual ? '📝' : '🔄'}
+                            </div>
+                            <div class="history-details">
+                                <div>📱 ${record.current_app || '未知'}</div>
+                                <div>🔋 ${record.battery_level !== null ? record.battery_level + '%' : '未知'}</div>
+                                <div>📍 ${record.district || '未知'}</div>
+                                <div>📶 ${record.network_type || '未知'}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                historyList.innerHTML = html;
+
+            } catch (error) {
+                console.error('加载历史失败:', error);
+                historyList.innerHTML = '<div class="loading">加载失败</div>';
+            }
+        }
+
+        // ==================== 工具函数 ====================
+
+        function updateCurrentTime() {
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            document.getElementById('currentTime').textContent = `${hours}:${minutes}`;
+        }
+
+        function startCountdown() {
+            clearInterval(countdownTimer);
+            countdown = 30;
+
+            countdownTimer = setInterval(() => {
+                countdown--;
+                document.getElementById('countdown').textContent = countdown;
+
+                if (countdown <= 0) {
+                    loadDeviceStatus();
+                    countdown = 30;
+                }
+            }, 1000);
+        }
+
+        // ==================== 事件监听 ====================
+
+        document.getElementById('historyBtn').addEventListener('click', () => {
+            document.getElementById('historyModal').classList.add('active');
+            loadHistory();
+        });
+
+        document.getElementById('closeHistoryModal').addEventListener('click', () => {
+            document.getElementById('historyModal').classList.remove('active');
+        });
+
+        document.getElementById('historyModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('historyModal')) {
+                document.getElementById('historyModal').classList.remove('active');
+            }
+        });
+
+        // ==================== 初始化 ====================
+
+        async function init() {
+            console.log('正在初始化...');
+            console.log('设备ID:', DEVICE_ID);
+
+            updateCurrentTime();
+            await loadDeviceStatus();
+            startCountdown();
+
+            // 每分钟更新时间
+            setInterval(updateCurrentTime, 60000);
+        }
+
+        // 启动
+        init();
+        let isMusicPlaying = true;
+        const bgMusic = document.getElementById('bgMusic');
+
+        // 创建音乐控制按钮（如果HTML里还没有）
+        if (!document.getElementById('musicBtn')) {
+            const musicBtn = document.createElement('button');
+            musicBtn.id = 'musicBtn';
+            musicBtn.innerHTML = '⏸️'; // 开始是暂停图标
+            musicBtn.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        border: none;
+        color: #ff4081;
+        font-size: 20px;
+        cursor: pointer;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 15px rgba(255, 64, 129, 0.3);
+        z-index: 1000;
+    `;
+            document.body.appendChild(musicBtn);
+        }
+
+        // 音乐控制函数
+        function toggleMusic() {
+            const musicBtn = document.getElementById('musicBtn');
+
+            if (isMusicPlaying) {
+                // 暂停音乐
+                bgMusic.pause();
+                musicBtn.innerHTML = '▶️'; // 播放图标
+                isMusicPlaying = false;
+            } else {
+                // 播放音乐
+                bgMusic.play().catch(e => {
+                    console.log('播放失败:', e);
+                    musicBtn.innerHTML = '🔇';
+                });
+                musicBtn.innerHTML = '⏸️'; // 暂停图标
+                isMusicPlaying = true;
+            }
+        }
+
+        // 绑定点击事件
+        document.getElementById('musicBtn').addEventListener('click', toggleMusic);
+
+        // 设置音量（避免太吵）
+        bgMusic.volume = 0.3;
+
+        // 处理自动播放被阻止的情况
+        bgMusic.play().catch(e => {
+            console.log('自动播放被阻止，需要用户交互');
+            document.getElementById('musicBtn').innerHTML = '🔇';
+        });
     </script>
 </body>
 
